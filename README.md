@@ -10,18 +10,18 @@ Here we show a way to customize
 host and flow isolation in a scalable way. Cake already has the ability to
 override its flow classification using tc filters (see the
 [cake man page](https://man7.org/linux/man-pages/man8/tc-cake.8.html#OVERRIDING_CLASSIFICATION_WITH_TC_FILTERS)),
-but filters are searched linearly. ISPs may have many subscribers, each with one
-or more IP/MAC addresses. We want fairness both between the ISP's subscribers,
-and the flows for each subscriber, without having to do a linear search through
-all subscribers.
+but they are searched linearly. ISPs may have many subscribers, each with one or
+more IP/MAC addresses. We want fairness at two levels, between the ISP's
+subscribers, and the flows for each subscriber, without having to do a linear
+search through all subscribers.
 
 [IP sets](https://ipset.netfilter.org/) provide highly scalable sets of various
-types, like IP addresses, MAC addresses, subnets, etc. Each of these sets
+types, like IP addresses, MAC addresses, subnets, etc. Each of these set types
 supports the skbinfo extension, which allows setting the firewall mark or skb
-priority individually for each ipset match. However, Cake expects to have tc
-filters as children of the Cake qdisc that set the major and minor class ID, in
-order to override the host and flow hash. We can't do this with ipsets, at
-least directly.
+priority individually for each ipset entry. However, Cake expects to have tc
+filters as children of the Cake qdisc that set the major and minor class ID to
+override the host and flow hash. We can't do this with ipsets, at least
+directly.
 
 Instead, we use use ipsets to set either the priority field or a firewall mark,
 then use either [tc-flow](https://man7.org/linux/man-pages/man8/tc-flow.8.html)
@@ -59,7 +59,7 @@ and/or flow classification with firewall marks or the skb priority,
 respectively.
 
 **Note:** Ignore any warnings like the below, which happen when running eBPF
-in network namespaces, and do not affect the the result:
+in network namespaces, and do not seem to affect the results:
 
 ```
 Continuing without mounted eBPF fs. Too old kernel?
@@ -84,12 +84,13 @@ flows.
 ### Overriding the Tin
 
 **Heads Up:** Cake also supports overriding the tin (priority level) using the
-skb priority field. If the major number of the priority field matches the qdisc
+skb priority field, which may conflict with our method of putting the classid
+into priority. If the major number of the priority field matches the qdisc
 handle of the Cake instance, the minor number of the priority field will be used
 to override the Cake tin, which may not be the intent. Either avoid conflicts
-with the major number (Cake's handle can always be changed), or use firewall
-marks instead. The priority field to classid mapping is provided in case the
-mark field is already in use for other purposes.
+with the major number (Cake's handle can always be changed), or use marks
+instead. The priority field to classid mapping is provided in case the mark
+field is already in use for other purposes.
 
 ### Overriding both Isolation and Tin
 
@@ -98,7 +99,7 @@ firewall mark. Thus, it's possible to customize both the isolation and the tin
 at the same time, e.g. if Cake's qdisc handle is 1, we're using `diffserv4` and
 we want to isolate an IP's traffic as host 1 and put its traffic into the video
 tin, something like this should work for the ipset entry, in combination with
-`mark_to_classid.o`:
+the `mark_to_classid.o` eBPF filter:
 
 ```
 ipset add subscribers 10.7.1.2 skbmark 0x10000 skbprio 1:3
