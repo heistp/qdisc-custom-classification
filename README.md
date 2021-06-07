@@ -14,8 +14,13 @@ using tc filters (see the
 [cake man page](https://man7.org/linux/man-pages/man8/tc-cake.8.html#OVERRIDING_CLASSIFICATION_WITH_TC_FILTERS)),
 but they are processed linearly. ISPs, for example, may have many subscribers,
 each with one or more IP/MAC addresses. We want isolation and fairness at two
-levels, between the ISP's subscribers (hosts), and the flows for each
-subscriber, without having to do a linear search through all the subscribers.
+levels:
+
+1. between the ISP's subscribers (hosts), and
+2. between the flows for each subscriber
+
+without having to do a linear search through all the subscribers, which would
+have to be done for each packet.
 
 [IP sets](https://ipset.netfilter.org/) provide highly scalable sets of various
 IP related types, like IP addresses, MAC addresses, subnets, etc. Each of these
@@ -25,7 +30,7 @@ tc filters as children of the Cake qdisc that set the major and minor class ID
 to override the host and flow hash. We can't do this with ipsets, at least
 directly.
 
-Instead, we use use the skbinfo extension of ipsets to set either the priority
+Instead, we use the skbinfo extension of ipsets to set either the priority
 field or a firewall mark, which like classids are also 32-bit unsigned values,
 then we use either
 [tc-flow](https://man7.org/linux/man-pages/man8/tc-flow.8.html) or
@@ -49,22 +54,24 @@ support BPF and BPF_SYSCALL, and iproute2 needs ELF library support compiled in.
 
 ## cakeiso.sh
 
-`cakeiso.sh` is a standalone test script that demonstrates and tests how to do
-this custom isolation. It sets up a netns environment with three namespaces, a
-client, a middlebox and a server. Three iperf3 servers are started on the
-server. We test three flows from two different "subscribers", two TCP flows and
-one unresponsive UDP flow, to show different host and flow isolation scenarios.
-To run it, simply execute as root:
+`cakeiso.sh` is a standalone test script that demonstrates how to do this custom
+isolation, and tests what works and what doesn't. It sets up a netns environment
+with three namespaces, a client, a middlebox and a server. Three iperf3 servers
+are started on the server. We test three flows from two different "subscribers",
+two TCP flows and one unresponsive UDP flow, to show different host and flow
+isolation scenarios. To run it, simply execute as root:
 
 `./cakeiso.sh`
 
 See [cakeiso.md](cakeiso.md) for sample output.
 
-Seven different scenarios show the key concepts with tc-flow and eBPF. Three
-scenarios show how tc-flow can be used to override the flow classification
-(minor classid), but cannot be used to override the host classification (major
-classid). Four scenarios use the eBPF classifiers `mark_to_classid.o` and
-`priority_to_classid.o` to override the host and/or flow classification.
+Seven different scenarios show the key concepts with tc-flow and eBPF:
+
+- Three scenarios show how tc-flow can be used to override the flow
+  classification (minor classid), but cannot be used to override the host
+  classification (major classid).
+- Four scenarios use the eBPF classifiers `mark_to_classid.o` and
+  `priority_to_classid.o` to override the host and/or flow classification.
 
 **Note:** Ignore any warnings like the below, which happen when running eBPF
 in network namespaces, and do not affect the results:
@@ -77,8 +84,9 @@ Continuing without mounted eBPF fs. Too old kernel?
 
 ### Beyond IP Addresses
 
-IP sets can also match by MAC address, IP/port, subnet, etc., supporting many
-thousands of elements with little runtime overhead.
+IP sets can also match by
+[MAC address, IP/port, subnet, etc.](https://ipset.netfilter.org/features.html),
+supporting many thousands of elements with little runtime overhead.
 
 ### CAKE_QUEUES
 
