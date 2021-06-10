@@ -1,7 +1,7 @@
-# cake-custom-isolation
+# qdisc-custom-classification
 
-Using ipsets, tc-flow and eBPF to do custom host and flow isolation with the
-Cake qdisc
+Using ipsets, tc-flow and eBPF to do custom qdisc flow classification with sfq,
+fq_codel, fq_pie and cake
 
 ## Introduction
 
@@ -43,7 +43,7 @@ If we only override the host, the flow is hashed automatically as usual.
 
 ## Installation
 
-Prerequisites: ipset, iperf3 (to run `cakeiso.sh` test script), clang and
+Prerequisites: ipset, iperf3 (to run `qdisc_classify.sh` test script), clang and
 libbpf (for eBPF compiliation)
 
 It's usually not necessary to rebuild the eBPF classifiers, because the
@@ -52,18 +52,18 @@ tested on amd64 with kernel 5.10, and arm64 with kernel 5.4. If the eBPF
 examples don't work, try recompiling with `make`. Your kernel also needs to
 support BPF and BPF_SYSCALL, and iproute2 needs ELF library support compiled in.
 
-## cakeiso.sh
+## qdisc_classify.sh
 
-`cakeiso.sh` is a standalone test script that demonstrates how to do this custom
-isolation, and tests what works and what doesn't. It sets up a netns environment
-with three namespaces, a client, a middlebox and a server. Three iperf3 servers
-are started on the server. We test three flows from two different "subscribers",
-two TCP flows and one unresponsive UDP flow, to show different host and flow
-isolation scenarios. To run it, simply execute as root:
+`qdisc_classify.sh` is a standalone test script that demonstrates how to do this
+custom isolation, and tests what works and what doesn't. It sets up a netns
+environment with three namespaces, a client, a middlebox and a server. Three
+iperf3 servers are started on the server. We test three flows from two different
+"subscribers", two TCP flows and one unresponsive UDP flow, to show different
+host and flow isolation scenarios. To run it, simply execute as root:
 
-`./cakeiso.sh`
+`./qdisc_classify.sh`
 
-See [cakeiso.md](cakeiso.md) for sample output.
+See [qdisc_classify.md](qdisc_classify.md) for sample output.
 
 Seven different scenarios show the key concepts with tc-flow and eBPF:
 
