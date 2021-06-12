@@ -280,13 +280,6 @@ isolation, then priority levels.
 
 ## ipset_qdisc_classify.sh
 
-To run it, simply execute as root, or see
-[sample output](ipset_qdisc_classify.md):
-
-`./ipset_qdisc_classify.sh`
-
-*Prerequisites:* ipset, iperf3, BPF and BPF_SYSCALL support in kernel
-
 `ipset_qdisc_classify.sh` is a standalone test script that demonstrates how to
 do custom qdisc classification with IP sets. It sets up a netns environment with
 three namespaces, a client, a middlebox and a server. Three iperf3 servers are
@@ -294,11 +287,12 @@ started on the server. We then test three flows, two TCP flows and one
 unresponsive UDP flow, from two different "subscribers", to show different host
 and flow isolation scenarios using fq_codel, sfq, fq_pie and cake.
 
-It's usually not necessary to rebuild the eBPF classifiers, because the
-executable format is portable. The pre-built objects in this repo have been
-tested on amd64 with kernel 5.10, and arm64 with kernel 5.4. If the eBPF
-examples don't work, try recompiling with `make`, which will also require clang
-and libbpf.
+*Prerequisites:* ipset, iperf3, BPF and BPF_SYSCALL support in kernel
+
+To run it, simply execute as root, or see
+[sample output](ipset_qdisc_classify.md):
+
+`./ipset_qdisc_classify.sh`
 
 **Note:** When running the script, ignore any warnings like the below, which
 happen when running eBPF in network namespaces, and do not affect the results:
@@ -306,6 +300,12 @@ happen when running eBPF in network namespaces, and do not affect the results:
 ```
 Continuing without mounted eBPF fs. Too old kernel?
 ```
+
+It's usually not necessary to rebuild the eBPF classifiers, because the
+executable format is portable. The pre-built objects in this repo have been
+tested on amd64 with kernel 5.10, and arm64 with kernel 5.4. If the eBPF
+examples don't work, try recompiling with `make`, which will also require clang
+and libbpf.
 
 ## More Info
 
@@ -334,4 +334,6 @@ in RFC3168, therefore, L4S flows dominate non-L4S flows in
 While FQ can sometimes protect non-L4S flows from L4S flows, using IP sets for
 flow classification as described here (such as by IP or MAC address, with
 fq_codel or Cake without flow hashing), is another potential path to flows
-sharing RFC3168 queues, besides tunnels and hash collisions.
+sharing RFC3168 queues, besides tunnels and hash collisions. It may be possible
+with eBPF to direct L4S and non-L4S flows to separate queues by looking at
+ECT(1), but that exercise is left up to the reader.
