@@ -72,6 +72,37 @@ run_test() {
 	cat /tmp/cakeiso3.log
 }
 
+# fq_codel_priority uses the priority field for fq_codel classification
+fq_codel_priority() {
+	cat <<- EOF
+	fq_codel: use priority field to override flow classification:
+	=============================================================
+
+	Here, we set the priority field to a classid with the major number
+	the same as the fq_codel major number (handle), and the minor number
+	to the subscriber ID. This way, we get a single Codel queue
+	per-subscriber.
+
+	As expected, we see fairness between Subscriber 1 and Subscriber 2,
+	and Subscriber 2's unresponsive UDP flow dominates their TCP flow,
+	because they're both in Subscriber 2's queue.
+
+	EOF
+
+	set -x
+	ip netns exec mid tc qdisc add dev mid.r root handle 1: htb default 10
+	ip netns exec mid tc class add dev mid.r parent 1: classid 1:10 \
+		htb rate 50Mbit
+	ip netns exec mid tc qdisc add dev mid.r handle 20: parent 1:10 fq_codel
+	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
+	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 20:1
+	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 20:2
+	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 20:2
+	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
+		-j SET --map-set subscribers dst --map-prio
+	set +x
+}
+
 # sfq_priority uses the priority field for sfq classification
 sfq_priority() {
 	cat <<- EOF
@@ -89,47 +120,16 @@ sfq_priority() {
 	EOF
 
 	set -x
+	ip netns exec mid tc qdisc add dev mid.r root handle 1: htb default 10
+	ip netns exec mid tc class add dev mid.r parent 1: classid 1:10 \
+		htb rate 50Mbit
+	ip netns exec mid tc qdisc add dev mid.r handle 20: parent 1:10 sfq
 	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
-	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 2:1
-	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 2:2
-	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 2:2
+	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 20:1
+	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 20:2
+	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 20:2
 	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
 		-j SET --map-set subscribers dst --map-prio
-	ip netns exec mid tc qdisc add dev mid.r root handle 1: htb default fff3
-	ip netns exec mid tc class add dev mid.r parent 1: classid 1:fff3 \
-		htb rate 50Mbit
-	ip netns exec mid tc qdisc add dev mid.r handle 2: parent 1:fff3 sfq
-	set +x
-}
-
-# fq_codel_priority uses the priority field for fq_codel classification
-fq_codel_priority() {
-	cat <<- EOF
-	fq_codel: use priority field to override flow classification:
-	=======================================================
-
-	Here, we set the priority field to a classid with the major number
-	the same as the fq_codel major number (handle), and the minor number
-	to the subscriber ID. This way, we get a single Codel queue
-	per-subscriber.
-
-	As expected, we see fairness between Subscriber 1 and Subscriber 2,
-	and Subscriber 2's unresponsive UDP flow dominates their TCP flow,
-	because they're both in Subscriber 2's queue.
-
-	EOF
-
-	set -x
-	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
-	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 2:1
-	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 2:2
-	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 2:2
-	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
-		-j SET --map-set subscribers dst --map-prio
-	ip netns exec mid tc qdisc add dev mid.r root handle 1: htb default fff3
-	ip netns exec mid tc class add dev mid.r parent 1: classid 1:fff3 \
-		htb rate 50Mbit
-	ip netns exec mid tc qdisc add dev mid.r handle 2: parent 1:fff3 fq_codel
 	set +x
 }
 
@@ -150,23 +150,23 @@ fq_pie_priority() {
 	EOF
 
 	set -x
+	ip netns exec mid tc qdisc add dev mid.r root handle 1: htb default 10
+	ip netns exec mid tc class add dev mid.r parent 1: classid 1:10 \
+		htb rate 50Mbit
+	ip netns exec mid tc qdisc add dev mid.r handle 20: parent 1:10 fq_pie
 	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
-	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 2:1
-	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 2:2
-	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 2:2
+	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 20:1
+	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 20:2
+	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 20:2
 	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
 		-j SET --map-set subscribers dst --map-prio
-	ip netns exec mid tc qdisc add dev mid.r root handle 1: htb default fff3
-	ip netns exec mid tc class add dev mid.r parent 1: classid 1:fff3 \
-		htb rate 50Mbit
-	ip netns exec mid tc qdisc add dev mid.r handle 2: parent 1:fff3 fq_pie
 	set +x
 }
 
 # cake_priority_tc_flow maps the priority field to flows using tc flow
 cake_priority_tc_flow() {
 	cat <<- EOF
-	Map priority field to classid with tc flow, flows only:
+	cake: map priority field to minor classid with tc flow:
 	=======================================================
 	
 	Here, we use tc-flow to map the priority field to the minor classid.
@@ -177,26 +177,26 @@ cake_priority_tc_flow() {
 	EOF
 
 	set -x
+	ip netns exec mid tc qdisc add dev mid.r handle 20: \
+		root cake bandwidth 50Mbit
+	ip netns exec mid tc filter add dev mid.r parent 20: handle 0x9 \
+		flow map key priority
 	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
 	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 0:1
 	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 0:2
 	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 0:2
 	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
 		-j SET --map-set subscribers dst --map-prio
-	ip netns exec mid tc qdisc add dev mid.r handle 1: \
-		root cake bandwidth 50Mbit
-	ip netns exec mid tc filter add dev mid.r parent 1: handle 0x9 \
-		flow map key priority
 	set +x
 }
 
 # cake_mark_tc_flow maps the firewall mark to flows using tc flow
 cake_mark_tc_flow() {
 	cat <<- EOF
-	Map firewall mark to classid with tc flow, flows only:
+	cake: map firewall mark to minor classid with tc flow:
 	======================================================
 	
-	Here, we use tc-flow to map the priority field to the minor classid.
+	Here, we use tc-flow to map the mark field to the minor classid.
 	As expected, as see fairness between Subscriber 1 and Subscriber 2,
 	but Subscriber 2's unresponsive UDP flow dominates their TCP flow,
 	because they map to the same Cake flow.
@@ -204,80 +204,81 @@ cake_mark_tc_flow() {
 	EOF
 
 	set -x
+	ip netns exec mid tc qdisc add dev mid.r handle 20: \
+		root cake bandwidth 50Mbit
+	ip netns exec mid tc filter add dev mid.r parent 20: handle 0x9 \
+		flow map key mark
 	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
 	ip netns exec mid ipset add subscribers 10.7.1.2 skbmark 0x1
 	ip netns exec mid ipset add subscribers 10.7.1.3 skbmark 0x2
 	ip netns exec mid ipset add subscribers 10.7.1.4 skbmark 0x2
 	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
 		-j SET --map-set subscribers dst --map-mark
-	ip netns exec mid tc qdisc add dev mid.r handle 1: \
-		root cake bandwidth 50Mbit
-	ip netns exec mid tc filter add dev mid.r parent 1: handle 0x9 \
-		flow map key mark
 	set +x
 }
 
 # cake_mark_tc_flow_hosts_fail maps the firewall mark to hosts using tc flow
 cake_mark_tc_flow_hosts_fail() {
 	cat <<- EOF
-	Map firewall mark to classid with tc-flow, failed hosts attempt:
-	================================================================
+	cake: map firewall mark to minor classid with tc-flow, failed hosts attempt:
+	============================================================================
 	
 	Here, we attempt to use tc-flow to map the firewall mark to hosts,
 	but the attempt fails because tc-flow doesn't map the major classid.
-	There is no fairness between subscribers, and the unresponsive flow wins.
+	All three flows end up in the same queue, because the lower 16 bits
+	of the mark (all zero) are added to a base class ID of :1.
 
 	EOF
 
 	set -x
+	ip netns exec mid tc qdisc add dev mid.r handle 20: \
+		root cake bandwidth 50Mbit dsthost
+	ip netns exec mid tc filter add dev mid.r parent 20: handle 0x9 \
+		flow map key mark
 	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
 	ip netns exec mid ipset add subscribers 10.7.1.2 skbmark 0x10000
 	ip netns exec mid ipset add subscribers 10.7.1.3 skbmark 0x20000
 	ip netns exec mid ipset add subscribers 10.7.1.4 skbmark 0x20000
 	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
 		-j SET --map-set subscribers dst --map-mark
-	ip netns exec mid tc qdisc add dev mid.r handle 1: \
-		root cake bandwidth 50Mbit
-	ip netns exec mid tc filter add dev mid.r parent 1: handle 0x9 \
-		flow map key mark
 	set +x
 }
 
 # cake_priority_ebpf maps the priority field to hosts using eBPF
 cake_priority_ebpf() {
 	cat <<- EOF
-	Map priority field to classid with eBPF, hosts only:
-	====================================================
+	cake: map priority field to classid with eBPF, hosts only:
+	==========================================================
 	
 	Here, we use an eBPF classifier to map the priority field to the classid,
 	using the major ID only.
 	
 	Because eBPF can map the major classid, we see both fairness between
 	Subscriber 1 and Subscriber 2, and also between Subscriber 2's
-	TCP and unresponsive UDP flows, because Cake hashes the flows when
-	we haven't specified the minor classid.
+	TCP and unresponsive UDP flows, because Cake hashes the flows as
+	usual when we haven't specified the minor classid.
 
 	EOF
 
 	set -x
+	ip netns exec mid tc qdisc add dev mid.r handle 20: \
+		root cake bandwidth 50Mbit
+	ip netns exec mid tc filter add dev mid.r parent 20: \
+		bpf obj priority_to_classid.o
 	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
-	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 2:0
-	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 3:0
-	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 3:0
+	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 1:0
+	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 2:0
+	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 2:0
 	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
 		-j SET --map-set subscribers dst --map-prio
-	ip netns exec mid tc qdisc add dev mid.r handle 1: \
-		root cake bandwidth 50Mbit
-	ip netns exec mid tc filter add dev mid.r parent 1: \
-		bpf obj priority_to_classid.o
 	set +x
 }
 
 # cake_priority_ebpf_flow maps the priority field to hosts and flows using eBPF
 cake_priority_ebpf_flow() {
 	cat <<- EOF
-	Map priority field to classid with eBPF, hosts and flows:
-	=========================================================
+	cake: map priority field to classid with eBPF, hosts and flows:
+	===============================================================
 	
 	Here, we use an eBPF classifier to map the priority field to the classid,
 	using both the major and minor parts of the class ID.
@@ -290,76 +291,76 @@ cake_priority_ebpf_flow() {
 	EOF
 
 	set -x
+	ip netns exec mid tc qdisc add dev mid.r handle 20: \
+		root cake bandwidth 50Mbit
+	ip netns exec mid tc filter add dev mid.r parent 20: \
+		bpf obj priority_to_classid.o
 	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
-	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 2:1
-	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 3:2
-	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 3:2
+	ip netns exec mid ipset add subscribers 10.7.1.2 skbprio 1:3
+	ip netns exec mid ipset add subscribers 10.7.1.3 skbprio 2:4
+	ip netns exec mid ipset add subscribers 10.7.1.4 skbprio 2:4
 	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
 		-j SET --map-set subscribers dst --map-prio
-	ip netns exec mid tc qdisc add dev mid.r handle 1: \
-		root cake bandwidth 50Mbit
-	ip netns exec mid tc filter add dev mid.r parent 1: \
-		bpf obj priority_to_classid.o
 	set +x
 }
 
 # cake_mark_ebpf maps the firewall mark to hosts using eBPF
 cake_mark_ebpf() {
 	cat <<- EOF
-	Map firewall mark with flow to classid with eBPF, hosts only:
-	=============================================================
+	cake: map firewall mark with flow to classid with eBPF, hosts only:
+	===================================================================
 	
 	Here, we use an eBPF classifier to map the firewall mark to the classid,
 	using the major ID only.
 	
 	Because eBPF can map the major classid, we see both fairness between
 	Subscriber 1 and Subscriber 2, and also between Subscriber 2's
-	TCP and unresponsive UDP flows, because Cake hashes the flows when
-	we haven't specified the minor classid.
+	TCP and unresponsive UDP flows, because Cake hashes the flows as
+	usual when we haven't specified the minor classid.
 
 	EOF
 
 	set -x
+	ip netns exec mid tc qdisc add dev mid.r handle 20: \
+		root cake bandwidth 50Mbit
+	ip netns exec mid tc filter add dev mid.r parent 20: \
+		bpf obj mark_to_classid.o
 	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
 	ip netns exec mid ipset add subscribers 10.7.1.2 skbmark 0x10000
 	ip netns exec mid ipset add subscribers 10.7.1.3 skbmark 0x20000
 	ip netns exec mid ipset add subscribers 10.7.1.4 skbmark 0x20000
 	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
 		-j SET --map-set subscribers dst --map-mark
-	ip netns exec mid tc qdisc add dev mid.r handle 1: \
-		root cake bandwidth 50Mbit
-	ip netns exec mid tc filter add dev mid.r parent 1: \
-		bpf obj mark_to_classid.o
 	set +x
 }
 
 # cake_mark_ebpf_flow maps the firewall mark to hosts and flows using eBPF
 cake_mark_ebpf_flow() {
 	cat <<- EOF
-	Map firewall mark with flow to classid with eBPF, hosts and flows:
-	==================================================================
+	cake: map firewall mark with flow to classid with eBPF, hosts and flows:
+	========================================================================
 	
 	Here, we use an eBPF classifier to map the firewall mark to the classid,
 	using both the major and minor parts of the class ID.
 	
-	Because eBPF can map both the major and minor classid, we see
-	fairness between Subscriber 1 and Subscriber 2, and we see Subscriber 2's
+	Because eBPF can map both the major and minor classid, we see fairness
+	between Subscriber 1 and Subscriber 2, and we see Subscriber 2's
 	unresponsive UDP flow dominate their TCP flow, since we have mapped
 	them to the same Cake flow.
 
 	EOF
 
 	set -x
+	ip netns exec mid tc qdisc add dev mid.r handle 20: \
+		root cake bandwidth 50Mbit
+	ip netns exec mid tc filter add dev mid.r parent 20: \
+		bpf obj mark_to_classid.o
 	ip netns exec mid ipset create subscribers hash:ip skbinfo # counters
-	ip netns exec mid ipset add subscribers 10.7.1.2 skbmark 0x10001
-	ip netns exec mid ipset add subscribers 10.7.1.3 skbmark 0x20002
-	ip netns exec mid ipset add subscribers 10.7.1.4 skbmark 0x20002
+	ip netns exec mid ipset add subscribers 10.7.1.2 skbmark 0x10003
+	ip netns exec mid ipset add subscribers 10.7.1.3 skbmark 0x20004
+	ip netns exec mid ipset add subscribers 10.7.1.4 skbmark 0x20004
 	ip netns exec mid iptables -o mid.r -t mangle -A POSTROUTING \
 		-j SET --map-set subscribers dst --map-mark
-	ip netns exec mid tc qdisc add dev mid.r handle 1: \
-		root cake bandwidth 50Mbit
-	ip netns exec mid tc filter add dev mid.r parent 1: \
-		bpf obj mark_to_classid.o
 	set +x
 }
 
@@ -367,8 +368,8 @@ cake_mark_ebpf_flow() {
 trap teardown EXIT
 
 setup_funcs=(\
-	sfq_priority \
 	fq_codel_priority \
+	sfq_priority \
 	fq_pie_priority \
 	cake_priority_tc_flow \
 	cake_mark_tc_flow \
