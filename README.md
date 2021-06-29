@@ -50,7 +50,9 @@ sfq is straightforward. We simply add a filter as a child of our qdisc that
 hashes the key/s we want, for example:
 
 ```
-tc qdisc add dev enp1s0 handle 20: fq_codel
+tc qdisc add dev enp1s0 root handle 1: htb default 10
+tc class add dev enp1s0 parent 1: classid 1:10 htb rate 50Mbit
+tc qdisc add dev enp1s0 handle 20: parent 1:10 fq_codel
 tc filter add dev enp1s0 protocol all parent 20: handle 1 \
         flow hash keys dst divisor 1024
 ```
