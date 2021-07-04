@@ -3,7 +3,7 @@ fq_codel: use tc-flow with destination address for flow classification:
 =======================================================================
 
 Here, we use tc-flow with "hash keys dst" to hash packets by destination
-address. This sets the minor classid, giving an fq_codel queue for each
+address. This sets the minor classid, giving a single queue for each
 destination address.
 
 As expected, we see fairness between destination Host 1 and Host 2, and
@@ -19,41 +19,41 @@ both in Host 2's queue.
 Host 1, TCP client (cubic):
 ---------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38636 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 42948 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  3.30 MBytes  27.7 Mbits/sec   20   24.0 KBytes       
-[  6]   1.00-2.00   sec  2.80 MBytes  23.5 Mbits/sec   18   21.2 KBytes       
-[  6]   2.00-3.00   sec  2.80 MBytes  23.5 Mbits/sec   20   19.8 KBytes       
-[  6]   3.00-4.00   sec  2.80 MBytes  23.5 Mbits/sec   19   19.8 KBytes       
-[  6]   4.00-5.00   sec  2.98 MBytes  25.0 Mbits/sec   17   21.2 KBytes       
+[  6]   0.00-1.00   sec  3.92 MBytes  32.9 Mbits/sec   20   21.2 KBytes       
+[  6]   1.00-2.00   sec  2.61 MBytes  21.9 Mbits/sec   18   24.0 KBytes       
+[  6]   2.00-3.00   sec  3.11 MBytes  26.1 Mbits/sec   22   15.6 KBytes       
+[  6]   3.00-4.00   sec  2.73 MBytes  22.9 Mbits/sec   19   19.8 KBytes       
+[  6]   4.00-5.00   sec  2.98 MBytes  25.0 Mbits/sec   21   18.4 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  14.7 MBytes  24.6 Mbits/sec   94             sender
-[  6]   0.00-5.01   sec  14.3 MBytes  23.9 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  15.4 MBytes  25.8 Mbits/sec  100             sender
+[  6]   0.00-5.01   sec  14.5 MBytes  24.2 Mbits/sec                  receiver
 
 iperf Done.
 
 Host 2, TCP client (cubic):
 ---------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37856 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42170 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  2.66 MBytes  22.3 Mbits/sec   17    161 KBytes       
-[  6]   1.00-2.00   sec   764 KBytes  6.26 Mbits/sec   22    106 KBytes       
-[  6]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec   19   36.8 KBytes       
-[  6]   3.00-4.00   sec   700 KBytes  5.74 Mbits/sec   23   11.3 KBytes       
-[  6]   4.00-5.00   sec   700 KBytes  5.74 Mbits/sec   20   5.66 KBytes       
+[  6]   0.00-1.00   sec  1.11 MBytes  9.28 Mbits/sec    8   11.3 KBytes       
+[  6]   1.00-2.00   sec   382 KBytes  3.13 Mbits/sec   11   14.1 KBytes       
+[  6]   2.00-3.00   sec   764 KBytes  6.26 Mbits/sec   27   7.07 KBytes       
+[  6]   3.00-4.00   sec   382 KBytes  3.13 Mbits/sec   21   12.7 KBytes       
+[  6]   4.00-5.00   sec   573 KBytes  4.69 Mbits/sec    9   21.2 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  4.77 MBytes  8.01 Mbits/sec  101             sender
-[  6]   0.00-5.00   sec  3.06 MBytes  5.13 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  3.16 MBytes  5.30 Mbits/sec   76             sender
+[  6]   0.00-5.02   sec  2.83 MBytes  4.73 Mbits/sec                  receiver
 
 iperf Done.
 
 Host 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------
 Connecting to host 10.7.1.3, port 5213
-[  6] local 10.7.0.2 port 59708 connected to 10.7.1.3 port 5213
+[  6] local 10.7.0.2 port 54215 connected to 10.7.1.3 port 5213
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
@@ -63,7 +63,7 @@ Connecting to host 10.7.1.3, port 5213
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
 [  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.01   sec  11.4 MBytes  19.1 Mbits/sec  0.528 ms  369/8632 (4.3%)  receiver
+[  6]   0.00-5.03   sec  11.5 MBytes  19.2 Mbits/sec  0.455 ms  273/8632 (3.2%)  receiver
 
 iperf Done.
 
@@ -71,7 +71,7 @@ sfq: use tc-flow with destination address for flow classification:
 =======================================================================
 
 Here, we use tc-flow with "hash keys dst" to hash packets by destination
-address. This sets the minor classid, giving an sfq queue for each
+address. This sets the minor classid, giving a single queue for each
 destination address.
 
 As expected, we see fairness between destination Host 1 and Host 2, and
@@ -87,51 +87,51 @@ both in Host 2's queue.
 Host 1, TCP client (cubic):
 ---------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38642 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 42958 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  3.68 MBytes  30.8 Mbits/sec   11   99.0 KBytes       
-[  6]   1.00-2.00   sec  2.98 MBytes  25.0 Mbits/sec    0    119 KBytes       
-[  6]   2.00-3.00   sec  2.61 MBytes  21.9 Mbits/sec    0    136 KBytes       
-[  6]   3.00-4.00   sec  2.98 MBytes  25.0 Mbits/sec    0    151 KBytes       
-[  6]   4.00-5.00   sec  2.98 MBytes  25.0 Mbits/sec    0    165 KBytes       
+[  6]   0.00-1.00   sec  3.81 MBytes  31.9 Mbits/sec    7    100 KBytes       
+[  6]   1.00-2.00   sec  2.61 MBytes  21.9 Mbits/sec    3    109 KBytes       
+[  6]   2.00-3.00   sec  2.98 MBytes  25.0 Mbits/sec    0    129 KBytes       
+[  6]   3.00-4.00   sec  2.98 MBytes  25.0 Mbits/sec    0    144 KBytes       
+[  6]   4.00-5.00   sec  2.61 MBytes  21.9 Mbits/sec    0    158 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  15.2 MBytes  25.6 Mbits/sec   11             sender
-[  6]   0.00-5.05   sec  14.4 MBytes  24.0 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  15.0 MBytes  25.2 Mbits/sec   10             sender
+[  6]   0.00-5.04   sec  14.4 MBytes  24.0 Mbits/sec                  receiver
 
 iperf Done.
 
 Host 2, TCP client (cubic):
 ---------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37866 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42180 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  2.35 MBytes  19.7 Mbits/sec  420   65.0 KBytes       
-[  6]   1.00-2.00   sec  1.24 MBytes  10.4 Mbits/sec   18   24.0 KBytes       
-[  6]   2.00-3.00   sec   636 KBytes  5.21 Mbits/sec    3   25.5 KBytes       
-[  6]   3.00-4.00   sec   700 KBytes  5.73 Mbits/sec    3   17.0 KBytes       
-[  6]   4.00-5.00   sec  0.00 Bytes  0.00 bits/sec    4   24.0 KBytes       
+[  6]   0.00-1.00   sec  2.60 MBytes  21.8 Mbits/sec  428   56.6 KBytes       
+[  6]   1.00-2.00   sec  1.24 MBytes  10.4 Mbits/sec    3   32.5 KBytes       
+[  6]   2.00-3.00   sec   636 KBytes  5.21 Mbits/sec    6   35.4 KBytes       
+[  6]   3.00-4.00   sec   636 KBytes  5.21 Mbits/sec    5   19.8 KBytes       
+[  6]   4.00-5.00   sec   700 KBytes  5.74 Mbits/sec    4   14.1 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  4.90 MBytes  8.21 Mbits/sec  448             sender
-[  6]   0.00-5.03   sec  3.70 MBytes  6.17 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  5.77 MBytes  9.67 Mbits/sec  446             sender
+[  6]   0.00-5.02   sec  3.95 MBytes  6.60 Mbits/sec                  receiver
 
 iperf Done.
 
 Host 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------
 Connecting to host 10.7.1.3, port 5213
-[  6] local 10.7.0.2 port 40984 connected to 10.7.1.3 port 5213
+[  6] local 10.7.0.2 port 34252 connected to 10.7.1.3 port 5213
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
 [  6]   2.00-3.00   sec  2.38 MBytes  20.0 Mbits/sec  1726  
 [  6]   3.00-4.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
-[  6]   4.00-5.00   sec  2.38 MBytes  20.0 Mbits/sec  1726  
+[  6]   4.00-5.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
-[  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8631 (0%)  sender
-[  6]   0.00-5.03   sec  10.8 MBytes  18.0 Mbits/sec  0.557 ms  805/8631 (9.3%)  receiver
+[  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
+[  6]   0.00-5.03   sec  10.5 MBytes  17.6 Mbits/sec  0.479 ms  1006/8632 (12%)  receiver
 
 iperf Done.
 
@@ -139,7 +139,7 @@ cake: use tc-flow with destination address for flow classification:
 =======================================================================
 
 Here, we use tc-flow with "hash keys dst" to hash packets by destination
-address. This sets the minor classid, giving an cake queue for each
+address. This sets the minor classid, giving a single queue for each
 destination address.
 
 As expected, we see fairness between destination Host 1 and Host 2, and
@@ -155,13 +155,13 @@ both in Host 2's queue.
 Host 1, TCP client (cubic):
 ---------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38656 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 42970 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  3.02 MBytes  25.4 Mbits/sec   12   19.8 KBytes       
-[  6]   1.00-2.00   sec  2.80 MBytes  23.5 Mbits/sec   13   15.6 KBytes       
-[  6]   2.00-3.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
-[  6]   3.00-4.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
-[  6]   4.00-5.00   sec  2.86 MBytes  24.0 Mbits/sec   13   12.7 KBytes       
+[  6]   0.00-1.00   sec  3.08 MBytes  25.9 Mbits/sec   12   18.4 KBytes       
+[  6]   1.00-2.00   sec  2.73 MBytes  22.9 Mbits/sec   13   14.1 KBytes       
+[  6]   2.00-3.00   sec  2.86 MBytes  24.0 Mbits/sec   12   18.4 KBytes       
+[  6]   3.00-4.00   sec  2.86 MBytes  24.0 Mbits/sec   13   18.4 KBytes       
+[  6]   4.00-5.00   sec  2.86 MBytes  24.0 Mbits/sec   14   12.7 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
 [  6]   0.00-5.00   sec  14.4 MBytes  24.1 Mbits/sec   64             sender
@@ -172,34 +172,34 @@ iperf Done.
 Host 2, TCP client (cubic):
 ---------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37876 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42190 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec   779 KBytes  6.38 Mbits/sec    7   5.66 KBytes       
-[  6]   1.00-2.00   sec   636 KBytes  5.21 Mbits/sec   15   5.66 KBytes       
-[  6]   2.00-3.00   sec   636 KBytes  5.21 Mbits/sec   22   5.66 KBytes       
-[  6]   3.00-4.00   sec   636 KBytes  5.21 Mbits/sec   26   4.24 KBytes       
-[  6]   4.00-5.00   sec   636 KBytes  5.21 Mbits/sec   28   5.66 KBytes       
+[  6]   0.00-1.00   sec   718 KBytes  5.88 Mbits/sec    7   8.48 KBytes       
+[  6]   1.00-2.00   sec   636 KBytes  5.21 Mbits/sec   12   7.07 KBytes       
+[  6]   2.00-3.00   sec   636 KBytes  5.21 Mbits/sec   20   5.66 KBytes       
+[  6]   3.00-4.00   sec   636 KBytes  5.21 Mbits/sec   21   8.48 KBytes       
+[  6]   4.00-5.00   sec   764 KBytes  6.26 Mbits/sec   27   8.48 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  3.25 MBytes  5.45 Mbits/sec   98             sender
-[  6]   0.00-5.00   sec  2.99 MBytes  5.01 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  3.31 MBytes  5.56 Mbits/sec   87             sender
+[  6]   0.00-5.00   sec  3.13 MBytes  5.24 Mbits/sec                  receiver
 
 iperf Done.
 
 Host 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------
 Connecting to host 10.7.1.3, port 5213
-[  6] local 10.7.0.2 port 60651 connected to 10.7.1.3 port 5213
+[  6] local 10.7.0.2 port 45203 connected to 10.7.1.3 port 5213
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
-[  6]   2.00-3.00   sec  2.38 MBytes  20.0 Mbits/sec  1726  
-[  6]   3.00-4.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
+[  6]   2.00-3.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
+[  6]   3.00-4.00   sec  2.38 MBytes  20.0 Mbits/sec  1726  
 [  6]   4.00-5.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
 [  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.01   sec  11.5 MBytes  19.2 Mbits/sec  0.492 ms  319/8632 (3.7%)  receiver
+[  6]   0.00-5.01   sec  11.3 MBytes  19.0 Mbits/sec  0.471 ms  418/8632 (4.8%)  receiver
 
 iperf Done.
 
@@ -227,16 +227,16 @@ because they're both in Subscriber 2's queue.
 Subscriber 1, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38668 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 42982 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  3.15 MBytes  26.4 Mbits/sec   20   19.8 KBytes       
-[  6]   1.00-2.00   sec  2.73 MBytes  22.9 Mbits/sec   19   19.8 KBytes       
-[  6]   2.00-3.00   sec  2.86 MBytes  24.0 Mbits/sec   16   24.0 KBytes       
-[  6]   3.00-4.00   sec  2.86 MBytes  24.0 Mbits/sec   18   19.8 KBytes       
-[  6]   4.00-5.00   sec  2.86 MBytes  24.0 Mbits/sec   18   19.8 KBytes       
+[  6]   0.00-1.00   sec  4.71 MBytes  39.5 Mbits/sec   41   17.0 KBytes       
+[  6]   1.00-2.00   sec  2.73 MBytes  22.9 Mbits/sec   18   25.5 KBytes       
+[  6]   2.00-3.00   sec  2.73 MBytes  22.9 Mbits/sec   18   25.5 KBytes       
+[  6]   3.00-4.00   sec  2.73 MBytes  22.9 Mbits/sec   19   21.2 KBytes       
+[  6]   4.00-5.00   sec  2.73 MBytes  22.9 Mbits/sec   20   19.8 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  14.5 MBytes  24.3 Mbits/sec   91             sender
+[  6]   0.00-5.00   sec  15.6 MBytes  26.3 Mbits/sec  116             sender
 [  6]   0.00-5.01   sec  14.3 MBytes  23.9 Mbits/sec                  receiver
 
 iperf Done.
@@ -244,24 +244,24 @@ iperf Done.
 Subscriber 2, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37884 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42196 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  1.26 MBytes  10.5 Mbits/sec    2   65.0 KBytes       
-[  6]   1.00-2.00   sec   382 KBytes  3.13 Mbits/sec   13   8.48 KBytes       
-[  6]   2.00-3.00   sec   573 KBytes  4.69 Mbits/sec   22   2.83 KBytes       
-[  6]   3.00-4.00   sec   573 KBytes  4.69 Mbits/sec    8   11.3 KBytes       
-[  6]   4.00-5.00   sec   573 KBytes  4.69 Mbits/sec   21   9.90 KBytes       
+[  6]   0.00-1.00   sec  1.93 MBytes  16.2 Mbits/sec    6    124 KBytes       
+[  6]   1.00-2.00   sec   445 KBytes  3.65 Mbits/sec    6   73.5 KBytes       
+[  6]   2.00-3.00   sec   445 KBytes  3.65 Mbits/sec   14   2.83 KBytes       
+[  6]   3.00-4.00   sec   445 KBytes  3.65 Mbits/sec   19   8.48 KBytes       
+[  6]   4.00-5.00   sec   891 KBytes  7.30 Mbits/sec   23   5.66 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  3.31 MBytes  5.55 Mbits/sec   66             sender
-[  6]   0.00-5.00   sec  2.95 MBytes  4.95 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  4.10 MBytes  6.88 Mbits/sec   68             sender
+[  6]   0.00-5.00   sec  3.05 MBytes  5.11 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------------
 Connecting to host 10.7.1.4, port 5204
-[  6] local 10.7.0.2 port 48046 connected to 10.7.1.4 port 5204
+[  6] local 10.7.0.2 port 57697 connected to 10.7.1.4 port 5204
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
@@ -271,7 +271,7 @@ Connecting to host 10.7.1.4, port 5204
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
 [  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.01   sec  11.5 MBytes  19.3 Mbits/sec  0.640 ms  287/8632 (3.3%)  receiver
+[  6]   0.00-5.01   sec  11.4 MBytes  19.1 Mbits/sec  0.559 ms  365/8632 (4.2%)  receiver
 
 iperf Done.
 
@@ -299,51 +299,51 @@ because they're both in Subscriber 2's queue.
 Subscriber 1, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38672 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 42988 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  3.72 MBytes  31.2 Mbits/sec    4    132 KBytes       
-[  6]   1.00-2.00   sec  2.98 MBytes  25.0 Mbits/sec    0    161 KBytes       
-[  6]   2.00-3.00   sec  2.61 MBytes  21.9 Mbits/sec    1    139 KBytes       
-[  6]   3.00-4.00   sec  3.11 MBytes  26.1 Mbits/sec    1    106 KBytes       
-[  6]   4.00-5.00   sec  2.61 MBytes  21.9 Mbits/sec    0    126 KBytes       
+[  6]   0.00-1.00   sec  3.87 MBytes  32.4 Mbits/sec    8    120 KBytes       
+[  6]   1.00-2.00   sec  2.61 MBytes  21.9 Mbits/sec    0    110 KBytes       
+[  6]   2.00-3.00   sec  2.98 MBytes  25.0 Mbits/sec    0    129 KBytes       
+[  6]   3.00-4.00   sec  2.98 MBytes  25.0 Mbits/sec    0    146 KBytes       
+[  6]   4.00-5.00   sec  2.61 MBytes  21.9 Mbits/sec    0    160 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  15.0 MBytes  25.2 Mbits/sec    6             sender
-[  6]   0.00-5.04   sec  14.4 MBytes  23.9 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  15.1 MBytes  25.3 Mbits/sec    8             sender
+[  6]   0.00-5.05   sec  14.4 MBytes  24.0 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37896 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42212 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  1.04 MBytes  8.76 Mbits/sec   23   14.1 KBytes       
-[  6]   1.00-2.00   sec   573 KBytes  4.69 Mbits/sec    2   24.0 KBytes       
-[  6]   2.00-3.00   sec   764 KBytes  6.26 Mbits/sec    4   22.6 KBytes       
-[  6]   3.00-4.00   sec   573 KBytes  4.69 Mbits/sec    2   31.1 KBytes       
-[  6]   4.00-5.00   sec   573 KBytes  4.69 Mbits/sec    4   22.6 KBytes       
+[  6]   0.00-1.00   sec  3.09 MBytes  26.0 Mbits/sec  437   65.0 KBytes       
+[  6]   1.00-2.00   sec   636 KBytes  5.21 Mbits/sec   29   26.9 KBytes       
+[  6]   2.00-3.00   sec   636 KBytes  5.21 Mbits/sec    1   31.1 KBytes       
+[  6]   3.00-4.00   sec   636 KBytes  5.21 Mbits/sec    3   26.9 KBytes       
+[  6]   4.00-5.00   sec   636 KBytes  5.21 Mbits/sec    7   25.5 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  3.47 MBytes  5.82 Mbits/sec   35             sender
-[  6]   0.00-5.03   sec  3.20 MBytes  5.34 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  5.58 MBytes  9.36 Mbits/sec  477             sender
+[  6]   0.00-5.03   sec  3.84 MBytes  6.40 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------------
 Connecting to host 10.7.1.4, port 5204
-[  6] local 10.7.0.2 port 34223 connected to 10.7.1.4 port 5204
+[  6] local 10.7.0.2 port 57854 connected to 10.7.1.4 port 5204
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
 [  6]   2.00-3.00   sec  2.38 MBytes  20.0 Mbits/sec  1726  
 [  6]   3.00-4.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
-[  6]   4.00-5.00   sec  2.38 MBytes  20.0 Mbits/sec  1726  
+[  6]   4.00-5.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
-[  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8631 (0%)  sender
-[  6]   0.00-5.04   sec  11.3 MBytes  18.9 Mbits/sec  0.380 ms  426/8631 (4.9%)  receiver
+[  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
+[  6]   0.00-5.04   sec  10.7 MBytes  17.8 Mbits/sec  0.488 ms  902/8632 (10%)  receiver
 
 iperf Done.
 
@@ -371,41 +371,41 @@ because they're both in Subscriber 2's queue.
 Subscriber 1, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38682 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 43004 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  4.49 MBytes  37.6 Mbits/sec   24    417 KBytes       
-[  6]   1.00-2.00   sec  3.60 MBytes  30.2 Mbits/sec  549   4.24 KBytes       
-[  6]   2.00-3.00   sec  3.54 MBytes  29.7 Mbits/sec  187   8.48 KBytes       
-[  6]   3.00-4.00   sec  2.36 MBytes  19.8 Mbits/sec  143   19.8 KBytes       
-[  6]   4.00-5.00   sec  3.54 MBytes  29.7 Mbits/sec   26   25.5 KBytes       
+[  6]   0.00-1.00   sec  3.58 MBytes  30.1 Mbits/sec    2    163 KBytes       
+[  6]   1.00-2.00   sec  2.98 MBytes  25.0 Mbits/sec   13   33.9 KBytes       
+[  6]   2.00-3.00   sec  2.98 MBytes  25.0 Mbits/sec    6   46.7 KBytes       
+[  6]   3.00-4.00   sec  2.98 MBytes  25.0 Mbits/sec    8   31.1 KBytes       
+[  6]   4.00-5.00   sec  2.98 MBytes  25.0 Mbits/sec    2   63.6 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  17.5 MBytes  29.4 Mbits/sec  929             sender
-[  6]   0.00-5.01   sec  14.5 MBytes  24.3 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  15.5 MBytes  26.0 Mbits/sec   31             sender
+[  6]   0.00-5.01   sec  14.6 MBytes  24.4 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37906 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42218 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  1.23 MBytes  10.3 Mbits/sec    2   86.3 KBytes       
-[  6]   1.00-2.00   sec   509 KBytes  4.17 Mbits/sec   66   2.83 KBytes       
-[  6]   2.00-3.00   sec   509 KBytes  4.17 Mbits/sec   36   5.66 KBytes       
-[  6]   3.00-4.00   sec   764 KBytes  6.26 Mbits/sec   28   8.48 KBytes       
-[  6]   4.00-5.00   sec   764 KBytes  6.26 Mbits/sec   26   7.07 KBytes       
+[  6]   0.00-1.00   sec  1.26 MBytes  10.5 Mbits/sec    2   83.4 KBytes       
+[  6]   1.00-2.00   sec   764 KBytes  6.26 Mbits/sec   66   2.83 KBytes       
+[  6]   2.00-3.00   sec   255 KBytes  2.08 Mbits/sec   27   7.07 KBytes       
+[  6]   3.00-4.00   sec   509 KBytes  4.17 Mbits/sec   28   9.90 KBytes       
+[  6]   4.00-5.00   sec   764 KBytes  6.26 Mbits/sec   29   4.24 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  3.72 MBytes  6.23 Mbits/sec  158             sender
-[  6]   0.00-5.00   sec  3.13 MBytes  5.25 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  3.50 MBytes  5.86 Mbits/sec  152             sender
+[  6]   0.00-5.00   sec  3.00 MBytes  5.03 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------------
 Connecting to host 10.7.1.4, port 5204
-[  6] local 10.7.0.2 port 35090 connected to 10.7.1.4 port 5204
+[  6] local 10.7.0.2 port 45710 connected to 10.7.1.4 port 5204
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
@@ -415,7 +415,7 @@ Connecting to host 10.7.1.4, port 5204
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
 [  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.01   sec  11.1 MBytes  18.6 Mbits/sec  0.561 ms  584/8632 (6.8%)  receiver
+[  6]   0.00-5.01   sec  11.1 MBytes  18.7 Mbits/sec  0.479 ms  563/8632 (6.5%)  receiver
 
 iperf Done.
 
@@ -439,41 +439,41 @@ because they map to the same Cake flow.
 Subscriber 1, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38698 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 43014 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
 [  6]   0.00-1.00   sec  3.02 MBytes  25.4 Mbits/sec   12   19.8 KBytes       
-[  6]   1.00-2.00   sec  2.80 MBytes  23.5 Mbits/sec   14   14.1 KBytes       
-[  6]   2.00-3.00   sec  2.86 MBytes  24.0 Mbits/sec   13   15.6 KBytes       
-[  6]   3.00-4.00   sec  2.92 MBytes  24.5 Mbits/sec   13   18.4 KBytes       
-[  6]   4.00-5.00   sec  2.80 MBytes  23.5 Mbits/sec   13   14.1 KBytes       
+[  6]   1.00-2.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
+[  6]   2.00-3.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
+[  6]   3.00-4.00   sec  2.80 MBytes  23.5 Mbits/sec   13   14.1 KBytes       
+[  6]   4.00-5.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  14.4 MBytes  24.1 Mbits/sec   65             sender
-[  6]   0.00-5.01   sec  14.3 MBytes  23.9 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  14.4 MBytes  24.1 Mbits/sec   64             sender
+[  6]   0.00-5.00   sec  14.3 MBytes  24.0 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37914 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42230 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec   730 KBytes  5.98 Mbits/sec    4   14.1 KBytes       
-[  6]   1.00-2.00   sec   573 KBytes  4.69 Mbits/sec   15   5.66 KBytes       
-[  6]   2.00-3.00   sec   700 KBytes  5.73 Mbits/sec   23   5.66 KBytes       
-[  6]   3.00-4.00   sec   573 KBytes  4.69 Mbits/sec   26   2.83 KBytes       
-[  6]   4.00-5.00   sec   573 KBytes  4.69 Mbits/sec   28   7.07 KBytes       
+[  6]   0.00-1.00   sec   724 KBytes  5.93 Mbits/sec   11   2.83 KBytes       
+[  6]   1.00-2.00   sec   573 KBytes  4.69 Mbits/sec   16   2.83 KBytes       
+[  6]   2.00-3.00   sec   700 KBytes  5.74 Mbits/sec   20   5.66 KBytes       
+[  6]   3.00-4.00   sec   573 KBytes  4.69 Mbits/sec   25   5.66 KBytes       
+[  6]   4.00-5.00   sec   636 KBytes  5.21 Mbits/sec   28   2.83 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  3.07 MBytes  5.16 Mbits/sec   96             sender
-[  6]   0.00-5.00   sec  2.94 MBytes  4.93 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  3.13 MBytes  5.25 Mbits/sec  100             sender
+[  6]   0.00-5.00   sec  2.97 MBytes  4.99 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------------
 Connecting to host 10.7.1.4, port 5204
-[  6] local 10.7.0.2 port 55001 connected to 10.7.1.4 port 5204
+[  6] local 10.7.0.2 port 45396 connected to 10.7.1.4 port 5204
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
@@ -483,7 +483,7 @@ Connecting to host 10.7.1.4, port 5204
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
 [  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.01   sec  11.5 MBytes  19.3 Mbits/sec  0.534 ms  285/8632 (3.3%)  receiver
+[  6]   0.00-5.01   sec  11.5 MBytes  19.2 Mbits/sec  0.472 ms  330/8632 (3.8%)  receiver
 
 iperf Done.
 
@@ -507,16 +507,16 @@ because they map to the same Cake flow.
 Subscriber 1, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38704 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 43020 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  3.02 MBytes  25.4 Mbits/sec   12   19.8 KBytes       
-[  6]   1.00-2.00   sec  2.86 MBytes  24.0 Mbits/sec   13   18.4 KBytes       
+[  6]   0.00-1.00   sec  2.96 MBytes  24.8 Mbits/sec   12   18.4 KBytes       
+[  6]   1.00-2.00   sec  2.92 MBytes  24.5 Mbits/sec   13   18.4 KBytes       
 [  6]   2.00-3.00   sec  2.80 MBytes  23.5 Mbits/sec   13   14.1 KBytes       
-[  6]   3.00-4.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
-[  6]   4.00-5.00   sec  2.92 MBytes  24.5 Mbits/sec   13   15.6 KBytes       
+[  6]   3.00-4.00   sec  2.86 MBytes  24.0 Mbits/sec   13   12.7 KBytes       
+[  6]   4.00-5.00   sec  2.92 MBytes  24.5 Mbits/sec   12   18.4 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  14.5 MBytes  24.3 Mbits/sec   64             sender
+[  6]   0.00-5.00   sec  14.5 MBytes  24.3 Mbits/sec   63             sender
 [  6]   0.00-5.01   sec  14.3 MBytes  23.9 Mbits/sec                  receiver
 
 iperf Done.
@@ -524,24 +524,24 @@ iperf Done.
 Subscriber 2, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37926 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42240 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec   734 KBytes  6.01 Mbits/sec    8   7.07 KBytes       
-[  6]   1.00-2.00   sec   636 KBytes  5.21 Mbits/sec   12   4.24 KBytes       
-[  6]   2.00-3.00   sec   636 KBytes  5.21 Mbits/sec   24   2.83 KBytes       
-[  6]   3.00-4.00   sec   636 KBytes  5.21 Mbits/sec   29   2.83 KBytes       
-[  6]   4.00-5.00   sec   509 KBytes  4.17 Mbits/sec   30   4.24 KBytes       
+[  6]   0.00-1.00   sec   805 KBytes  6.59 Mbits/sec    4   14.1 KBytes       
+[  6]   1.00-2.00   sec   509 KBytes  4.17 Mbits/sec   14   7.07 KBytes       
+[  6]   2.00-3.00   sec   636 KBytes  5.21 Mbits/sec   22   7.07 KBytes       
+[  6]   3.00-4.00   sec   636 KBytes  5.21 Mbits/sec   24   2.83 KBytes       
+[  6]   4.00-5.00   sec   636 KBytes  5.21 Mbits/sec   30   4.24 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  3.08 MBytes  5.16 Mbits/sec  103             sender
-[  6]   0.00-5.00   sec  2.92 MBytes  4.90 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  3.15 MBytes  5.28 Mbits/sec   94             sender
+[  6]   0.00-5.00   sec  2.91 MBytes  4.89 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------------
 Connecting to host 10.7.1.4, port 5204
-[  6] local 10.7.0.2 port 47584 connected to 10.7.1.4 port 5204
+[  6] local 10.7.0.2 port 49767 connected to 10.7.1.4 port 5204
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
@@ -551,7 +551,7 @@ Connecting to host 10.7.1.4, port 5204
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
 [  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.01   sec  11.5 MBytes  19.3 Mbits/sec  0.481 ms  273/8632 (3.2%)  receiver
+[  6]   0.00-5.00   sec  11.6 MBytes  19.4 Mbits/sec  0.478 ms  265/8632 (3.1%)  receiver
 
 iperf Done.
 
@@ -575,51 +575,51 @@ of the mark (all zero) are added to a base class ID of :1.
 Subscriber 1, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38716 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 43026 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  2.04 MBytes  17.1 Mbits/sec   11   12.7 KBytes       
-[  6]   1.00-2.00   sec  1.37 MBytes  11.5 Mbits/sec   15   14.1 KBytes       
-[  6]   2.00-3.00   sec  1.49 MBytes  12.5 Mbits/sec   19   9.90 KBytes       
-[  6]   3.00-4.00   sec  1.74 MBytes  14.6 Mbits/sec   17   9.90 KBytes       
-[  6]   4.00-5.00   sec  1.62 MBytes  13.6 Mbits/sec   19   11.3 KBytes       
+[  6]   0.00-1.00   sec  1.33 MBytes  11.2 Mbits/sec   11   4.24 KBytes       
+[  6]   1.00-2.00   sec  1.69 MBytes  14.2 Mbits/sec   15   11.3 KBytes       
+[  6]   2.00-3.00   sec  1.62 MBytes  13.6 Mbits/sec   17   8.48 KBytes       
+[  6]   3.00-4.00   sec  1.80 MBytes  15.1 Mbits/sec   19   11.3 KBytes       
+[  6]   4.00-5.00   sec  1.81 MBytes  15.2 Mbits/sec   19   11.3 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  8.26 MBytes  13.9 Mbits/sec   81             sender
-[  6]   0.00-5.00   sec  8.05 MBytes  13.5 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  8.25 MBytes  13.8 Mbits/sec   81             sender
+[  6]   0.00-5.00   sec  8.16 MBytes  13.7 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37936 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42250 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  1.58 MBytes  13.3 Mbits/sec   12   15.6 KBytes       
-[  6]   1.00-2.00   sec  2.07 MBytes  17.4 Mbits/sec   13   11.3 KBytes       
-[  6]   2.00-3.00   sec  1.93 MBytes  16.2 Mbits/sec   16   14.1 KBytes       
-[  6]   3.00-4.00   sec  1.62 MBytes  13.6 Mbits/sec   18   9.90 KBytes       
-[  6]   4.00-5.00   sec  1.80 MBytes  15.1 Mbits/sec   20   8.48 KBytes       
+[  6]   0.00-1.00   sec  2.43 MBytes  20.4 Mbits/sec    7   18.4 KBytes       
+[  6]   1.00-2.00   sec  1.74 MBytes  14.6 Mbits/sec   19   9.90 KBytes       
+[  6]   2.00-3.00   sec  1.74 MBytes  14.6 Mbits/sec   16   9.90 KBytes       
+[  6]   3.00-4.00   sec  1.49 MBytes  12.5 Mbits/sec   16   15.6 KBytes       
+[  6]   4.00-5.00   sec  1.62 MBytes  13.6 Mbits/sec   17   18.4 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  9.00 MBytes  15.1 Mbits/sec   79             sender
-[  6]   0.00-5.00   sec  8.91 MBytes  14.9 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  9.02 MBytes  15.1 Mbits/sec   75             sender
+[  6]   0.00-5.01   sec  8.81 MBytes  14.8 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------------
 Connecting to host 10.7.1.4, port 5204
-[  6] local 10.7.0.2 port 53378 connected to 10.7.1.4 port 5204
+[  6] local 10.7.0.2 port 57284 connected to 10.7.1.4 port 5204
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
 [  6]   2.00-3.00   sec  2.38 MBytes  20.0 Mbits/sec  1726  
 [  6]   3.00-4.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
-[  6]   4.00-5.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
+[  6]   4.00-5.00   sec  2.38 MBytes  20.0 Mbits/sec  1726  
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
-[  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.01   sec  11.8 MBytes  19.7 Mbits/sec  0.328 ms  104/8632 (1.2%)  receiver
+[  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8631 (0%)  sender
+[  6]   0.00-5.00   sec  11.8 MBytes  19.7 Mbits/sec  0.259 ms  103/8631 (1.2%)  receiver
 
 iperf Done.
 
@@ -647,16 +647,16 @@ Continuing without mounted eBPF fs. Too old kernel?
 Subscriber 1, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38724 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 43042 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  2.99 MBytes  25.1 Mbits/sec   12   19.8 KBytes       
-[  6]   1.00-2.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
+[  6]   0.00-1.00   sec  3.05 MBytes  25.6 Mbits/sec   13   15.6 KBytes       
+[  6]   1.00-2.00   sec  2.80 MBytes  23.5 Mbits/sec   13   15.6 KBytes       
 [  6]   2.00-3.00   sec  2.86 MBytes  24.0 Mbits/sec   12   19.8 KBytes       
-[  6]   3.00-4.00   sec  2.86 MBytes  24.0 Mbits/sec   13   18.4 KBytes       
-[  6]   4.00-5.00   sec  2.80 MBytes  23.5 Mbits/sec   13   18.4 KBytes       
+[  6]   3.00-4.00   sec  2.80 MBytes  23.5 Mbits/sec   14   14.1 KBytes       
+[  6]   4.00-5.00   sec  2.86 MBytes  24.0 Mbits/sec   12   18.4 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  14.4 MBytes  24.1 Mbits/sec   63             sender
+[  6]   0.00-5.00   sec  14.4 MBytes  24.1 Mbits/sec   64             sender
 [  6]   0.00-5.00   sec  14.3 MBytes  23.9 Mbits/sec                  receiver
 
 iperf Done.
@@ -664,16 +664,16 @@ iperf Done.
 Subscriber 2, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37944 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42258 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  1.56 MBytes  13.1 Mbits/sec   16   11.3 KBytes       
-[  6]   1.00-2.00   sec  1.43 MBytes  12.0 Mbits/sec   15   8.48 KBytes       
-[  6]   2.00-3.00   sec  1.43 MBytes  12.0 Mbits/sec   16   11.3 KBytes       
-[  6]   3.00-4.00   sec  1.37 MBytes  11.5 Mbits/sec   18   5.66 KBytes       
-[  6]   4.00-5.00   sec  1.43 MBytes  12.0 Mbits/sec   16   7.07 KBytes       
+[  6]   0.00-1.00   sec  1.53 MBytes  12.9 Mbits/sec   16   8.48 KBytes       
+[  6]   1.00-2.00   sec  1.43 MBytes  12.0 Mbits/sec   14   7.07 KBytes       
+[  6]   2.00-3.00   sec  1.43 MBytes  12.0 Mbits/sec   17   8.48 KBytes       
+[  6]   3.00-4.00   sec  1.43 MBytes  12.0 Mbits/sec   17   8.48 KBytes       
+[  6]   4.00-5.00   sec  1.43 MBytes  12.0 Mbits/sec   17   8.48 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  7.22 MBytes  12.1 Mbits/sec   81             sender
+[  6]   0.00-5.00   sec  7.25 MBytes  12.2 Mbits/sec   81             sender
 [  6]   0.00-5.00   sec  7.13 MBytes  12.0 Mbits/sec                  receiver
 
 iperf Done.
@@ -681,7 +681,7 @@ iperf Done.
 Subscriber 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------------
 Connecting to host 10.7.1.4, port 5204
-[  6] local 10.7.0.2 port 57127 connected to 10.7.1.4 port 5204
+[  6] local 10.7.0.2 port 42937 connected to 10.7.1.4 port 5204
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
@@ -691,7 +691,7 @@ Connecting to host 10.7.1.4, port 5204
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
 [  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.00   sec  7.25 MBytes  12.2 Mbits/sec  0.482 ms  1669/6918 (24%)  receiver
+[  6]   0.00-5.00   sec  7.25 MBytes  12.2 Mbits/sec  0.537 ms  1659/6912 (24%)  receiver
 
 iperf Done.
 
@@ -719,41 +719,41 @@ Continuing without mounted eBPF fs. Too old kernel?
 Subscriber 1, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38738 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 43052 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  3.02 MBytes  25.4 Mbits/sec   12   18.4 KBytes       
-[  6]   1.00-2.00   sec  2.80 MBytes  23.5 Mbits/sec   13   15.6 KBytes       
-[  6]   2.00-3.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
-[  6]   3.00-4.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
-[  6]   4.00-5.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
+[  6]   0.00-1.00   sec  2.96 MBytes  24.8 Mbits/sec   13   14.1 KBytes       
+[  6]   1.00-2.00   sec  2.86 MBytes  24.0 Mbits/sec   12   19.8 KBytes       
+[  6]   2.00-3.00   sec  2.86 MBytes  24.0 Mbits/sec   13   18.4 KBytes       
+[  6]   3.00-4.00   sec  2.92 MBytes  24.5 Mbits/sec   13   14.1 KBytes       
+[  6]   4.00-5.00   sec  2.80 MBytes  23.5 Mbits/sec   13   14.1 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
 [  6]   0.00-5.00   sec  14.4 MBytes  24.1 Mbits/sec   64             sender
-[  6]   0.00-5.00   sec  14.3 MBytes  23.9 Mbits/sec                  receiver
+[  6]   0.00-5.01   sec  14.3 MBytes  23.9 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37954 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42268 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec   718 KBytes  5.88 Mbits/sec    7   11.3 KBytes       
-[  6]   1.00-2.00   sec   636 KBytes  5.21 Mbits/sec   15   11.3 KBytes       
-[  6]   2.00-3.00   sec   636 KBytes  5.21 Mbits/sec   20   5.66 KBytes       
-[  6]   3.00-4.00   sec   573 KBytes  4.69 Mbits/sec   26   4.24 KBytes       
-[  6]   4.00-5.00   sec   573 KBytes  4.69 Mbits/sec   29   5.66 KBytes       
+[  6]   0.00-1.00   sec   721 KBytes  5.91 Mbits/sec    8   5.66 KBytes       
+[  6]   1.00-2.00   sec   636 KBytes  5.21 Mbits/sec   15   2.83 KBytes       
+[  6]   2.00-3.00   sec   636 KBytes  5.21 Mbits/sec   19   5.66 KBytes       
+[  6]   3.00-4.00   sec   573 KBytes  4.69 Mbits/sec   29   4.24 KBytes       
+[  6]   4.00-5.00   sec   636 KBytes  5.21 Mbits/sec   24   7.07 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  3.06 MBytes  5.14 Mbits/sec   97             sender
-[  6]   0.00-5.00   sec  2.92 MBytes  4.90 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  3.13 MBytes  5.25 Mbits/sec   95             sender
+[  6]   0.00-5.00   sec  2.99 MBytes  5.02 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------------
 Connecting to host 10.7.1.4, port 5204
-[  6] local 10.7.0.2 port 35528 connected to 10.7.1.4 port 5204
+[  6] local 10.7.0.2 port 50913 connected to 10.7.1.4 port 5204
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
@@ -763,7 +763,7 @@ Connecting to host 10.7.1.4, port 5204
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
 [  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.01   sec  11.5 MBytes  19.3 Mbits/sec  0.489 ms  273/8632 (3.2%)  receiver
+[  6]   0.00-5.01   sec  11.5 MBytes  19.2 Mbits/sec  0.491 ms  324/8632 (3.8%)  receiver
 
 iperf Done.
 
@@ -791,41 +791,41 @@ Continuing without mounted eBPF fs. Too old kernel?
 Subscriber 1, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38744 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 43062 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  3.02 MBytes  25.4 Mbits/sec   13   18.4 KBytes       
-[  6]   1.00-2.00   sec  2.80 MBytes  23.5 Mbits/sec   13   17.0 KBytes       
-[  6]   2.00-3.00   sec  2.86 MBytes  24.0 Mbits/sec   13   15.6 KBytes       
-[  6]   3.00-4.00   sec  2.92 MBytes  24.5 Mbits/sec   13   18.4 KBytes       
-[  6]   4.00-5.00   sec  2.80 MBytes  23.5 Mbits/sec   13   15.6 KBytes       
+[  6]   0.00-1.00   sec  2.22 MBytes  18.6 Mbits/sec   13   18.4 KBytes       
+[  6]   1.00-2.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
+[  6]   2.00-3.00   sec  2.80 MBytes  23.5 Mbits/sec   13   14.1 KBytes       
+[  6]   3.00-4.00   sec  2.86 MBytes  24.0 Mbits/sec   12   19.8 KBytes       
+[  6]   4.00-5.00   sec  2.86 MBytes  24.0 Mbits/sec   13   18.4 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  14.4 MBytes  24.1 Mbits/sec   65             sender
-[  6]   0.00-5.00   sec  14.3 MBytes  23.9 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  13.6 MBytes  22.8 Mbits/sec   64             sender
+[  6]   0.00-5.00   sec  13.5 MBytes  22.6 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37966 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42274 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  1.56 MBytes  13.1 Mbits/sec   16   7.07 KBytes       
+[  6]   0.00-1.00   sec  1.72 MBytes  14.4 Mbits/sec   15   8.48 KBytes       
 [  6]   1.00-2.00   sec  1.43 MBytes  12.0 Mbits/sec   14   8.48 KBytes       
-[  6]   2.00-3.00   sec  1.43 MBytes  12.0 Mbits/sec   16   8.48 KBytes       
-[  6]   3.00-4.00   sec  1.37 MBytes  11.5 Mbits/sec   18   7.07 KBytes       
-[  6]   4.00-5.00   sec  1.43 MBytes  12.0 Mbits/sec   18   8.48 KBytes       
+[  6]   2.00-3.00   sec  1.43 MBytes  12.0 Mbits/sec   17   8.48 KBytes       
+[  6]   3.00-4.00   sec  1.43 MBytes  12.0 Mbits/sec   17   7.07 KBytes       
+[  6]   4.00-5.00   sec  1.43 MBytes  12.0 Mbits/sec   17   8.48 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  7.22 MBytes  12.1 Mbits/sec   82             sender
-[  6]   0.00-5.00   sec  7.13 MBytes  12.0 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  7.43 MBytes  12.5 Mbits/sec   80             sender
+[  6]   0.00-5.00   sec  7.30 MBytes  12.2 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------------
 Connecting to host 10.7.1.4, port 5204
-[  6] local 10.7.0.2 port 36522 connected to 10.7.1.4 port 5204
+[  6] local 10.7.0.2 port 59706 connected to 10.7.1.4 port 5204
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
@@ -835,7 +835,7 @@ Connecting to host 10.7.1.4, port 5204
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
 [  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.00   sec  7.25 MBytes  12.2 Mbits/sec  0.555 ms  1593/6845 (23%)  receiver
+[  6]   0.00-5.00   sec  7.87 MBytes  13.2 Mbits/sec  0.360 ms  1142/6840 (17%)  receiver
 
 iperf Done.
 
@@ -863,41 +863,41 @@ Continuing without mounted eBPF fs. Too old kernel?
 Subscriber 1, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.2, port 5202
-[  6] local 10.7.0.2 port 38756 connected to 10.7.1.2 port 5202
+[  6] local 10.7.0.2 port 43066 connected to 10.7.1.2 port 5202
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec  2.96 MBytes  24.8 Mbits/sec   12   19.8 KBytes       
-[  6]   1.00-2.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
-[  6]   2.00-3.00   sec  2.86 MBytes  24.0 Mbits/sec   13   15.6 KBytes       
-[  6]   3.00-4.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
-[  6]   4.00-5.00   sec  2.86 MBytes  24.0 Mbits/sec   13   14.1 KBytes       
+[  6]   0.00-1.00   sec  3.02 MBytes  25.4 Mbits/sec   12   18.4 KBytes       
+[  6]   1.00-2.00   sec  2.80 MBytes  23.5 Mbits/sec   13   12.7 KBytes       
+[  6]   2.00-3.00   sec  2.92 MBytes  24.5 Mbits/sec   12   18.4 KBytes       
+[  6]   3.00-4.00   sec  2.80 MBytes  23.5 Mbits/sec   13   18.4 KBytes       
+[  6]   4.00-5.00   sec  2.92 MBytes  24.5 Mbits/sec   13   18.4 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  14.4 MBytes  24.1 Mbits/sec   64             sender
-[  6]   0.00-5.00   sec  14.3 MBytes  23.9 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  14.5 MBytes  24.3 Mbits/sec   63             sender
+[  6]   0.00-5.01   sec  14.3 MBytes  23.9 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, TCP client (cubic):
 ---------------------------------
 Connecting to host 10.7.1.3, port 5203
-[  6] local 10.7.0.2 port 37972 connected to 10.7.1.3 port 5203
+[  6] local 10.7.0.2 port 42290 connected to 10.7.1.3 port 5203
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  6]   0.00-1.00   sec   721 KBytes  5.91 Mbits/sec    6   5.66 KBytes       
-[  6]   1.00-2.00   sec   573 KBytes  4.69 Mbits/sec   15   4.24 KBytes       
-[  6]   2.00-3.00   sec   700 KBytes  5.73 Mbits/sec   20   4.24 KBytes       
-[  6]   3.00-4.00   sec   573 KBytes  4.69 Mbits/sec   26   2.83 KBytes       
-[  6]   4.00-5.00   sec   636 KBytes  5.21 Mbits/sec   25   5.66 KBytes       
+[  6]   0.00-1.00   sec   788 KBytes  6.45 Mbits/sec    4   15.6 KBytes       
+[  6]   1.00-2.00   sec   636 KBytes  5.21 Mbits/sec   12   5.66 KBytes       
+[  6]   2.00-3.00   sec   636 KBytes  5.21 Mbits/sec   24   7.07 KBytes       
+[  6]   3.00-4.00   sec   636 KBytes  5.21 Mbits/sec   27   5.66 KBytes       
+[  6]   4.00-5.00   sec   509 KBytes  4.17 Mbits/sec   33   4.24 KBytes       
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  6]   0.00-5.00   sec  3.13 MBytes  5.25 Mbits/sec   92             sender
-[  6]   0.00-5.00   sec  3.00 MBytes  5.03 Mbits/sec                  receiver
+[  6]   0.00-5.00   sec  3.13 MBytes  5.25 Mbits/sec  100             sender
+[  6]   0.00-5.00   sec  2.92 MBytes  4.90 Mbits/sec                  receiver
 
 iperf Done.
 
 Subscriber 2, UDP client, 20Mbps unresponsive:
 ----------------------------------------------
 Connecting to host 10.7.1.4, port 5204
-[  6] local 10.7.0.2 port 46928 connected to 10.7.1.4 port 5204
+[  6] local 10.7.0.2 port 54443 connected to 10.7.1.4 port 5204
 [ ID] Interval           Transfer     Bitrate         Total Datagrams
 [  6]   0.00-1.00   sec  2.38 MBytes  20.0 Mbits/sec  1725  
 [  6]   1.00-2.00   sec  2.38 MBytes  20.0 Mbits/sec  1727  
@@ -907,7 +907,7 @@ Connecting to host 10.7.1.4, port 5204
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
 [  6]   0.00-5.00   sec  11.9 MBytes  20.0 Mbits/sec  0.000 ms  0/8632 (0%)  sender
-[  6]   0.00-5.01   sec  11.5 MBytes  19.2 Mbits/sec  0.457 ms  324/8632 (3.8%)  receiver
+[  6]   0.00-5.01   sec  11.5 MBytes  19.3 Mbits/sec  0.490 ms  277/8632 (3.2%)  receiver
 
 iperf Done.
 ```

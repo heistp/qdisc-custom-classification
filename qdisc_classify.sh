@@ -106,7 +106,7 @@ host_tc_flow() {
 	=======================================================================
 
 	Here, we use tc-flow with "hash keys dst" to hash packets by destination
-	address. This sets the minor classid, giving an $1 queue for each
+	address. This sets the minor classid, giving a single queue for each
 	destination address.
 
 	As expected, we see fairness between destination Host 1 and Host 2, and
